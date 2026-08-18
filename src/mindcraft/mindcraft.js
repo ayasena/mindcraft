@@ -48,7 +48,10 @@ export async function createAgent(settings) {
             const server = await getServer(settings.host, settings.port, settings.minecraft_version);
             settings.host = server.host;
             settings.port = server.port;
-            settings.minecraft_version = server.version;
+            // Keep an explicit client version for ViaVersion-compatible servers.
+            if (settings.minecraft_version === "auto") {
+                settings.minecraft_version = server.version;
+            }
         } catch (error) {
             console.warn(`Error getting server:`, error);
             if (settings.minecraft_version === "auto") {

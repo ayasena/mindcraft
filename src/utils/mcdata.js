@@ -53,6 +53,9 @@ export const WOOL_COLORS = [
 
 
 export function initBot(username) {
+    // Settings arrive asynchronously from MindServer after this module loads.
+    // Read the current value here instead of using the import-time snapshot.
+    mc_version = settings.minecraft_version;
     const options = {
         username: username,
         host: settings.host,
