@@ -1,0 +1,9 @@
+{
+    "name": "aria",
+    "model": {
+        "api": "openai",
+        "url": "http://host.docker.internal:20129/v1",
+        "model": "cc/claude-haiku-4-5-20251001"
+    },
+    "embedding": "ollama"
+}

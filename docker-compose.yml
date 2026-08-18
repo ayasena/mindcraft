@@ -39,7 +39,8 @@ services:
       MINECRAFT_HOST: ${MINECRAFT_HOST:?Set MINECRAFT_HOST in Coolify}
       MINECRAFT_PORT: ${MINECRAFT_PORT:-25565}
       MINDSERVER_PORT: 8080
-      PROFILES: '["./profiles/andy-4.json"]'
+      PROFILES: '["./profiles/aria.json"]'
+      OPENAI_API_KEY: ${OMNI_ROUTER_API_KEY:?Set OMNI_ROUTER_API_KEY in Coolify}
       SETTINGS_JSON: '{"minecraft_version":"1.21.11","auto_open_ui":false,"render_bot_view":true}'
       OLLAMA_URL: http://ollama:11434
     ports:
