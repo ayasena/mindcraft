@@ -1,27 +1,21 @@
 services:
   mindcraft:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
-      SETTINGS_JSON: |
-        {"auto_open_ui": false}
-    volumes:
-      - ./settings.js:/app/settings.js
-      - ./keys.json:/app/keys.json
-      - ./profiles:/app/profiles
-      - ./bots:/app/bots
+      # Coolify injects these values. Do not commit API keys.
+      MINECRAFT_HOST: ${MINECRAFT_HOST:?Set MINECRAFT_HOST in Coolify}
+      MINECRAFT_PORT: ${MINECRAFT_PORT:-55916}
+      MINDSERVER_PORT: 8080
+      PROFILES: '["./andy.json"]'
+      SETTINGS_JSON: '{"auto_open_ui":false,"render_bot_view":false}'
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
     ports:
-      - "3000-3003:3000-3003" # see the view from the camera mounted on your bot head: http://localhost:3000/
-      - 8080 # Mindserver port
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
-
-  viaproxy: #use this service to connect to an unsupported minecraft server versions. more info: ./services/viaproxy/README.md
-    image: ghcr.io/viaversion/viaproxy:latest
-    volumes:
-      - ./services/viaproxy:/app/run
-    ports:
-      - "25568:25568"
-    profiles:
-      - viaproxy
-    stdin_open: true
-    tty: true
+      - "8080"
+      - "3000-3003"

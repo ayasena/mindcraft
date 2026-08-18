@@ -38,8 +38,11 @@ if (args.task_path) {
 }
 
 // these environment variables override certain settings
+if (process.env.MINECRAFT_HOST) {
+    settings.host = process.env.MINECRAFT_HOST;
+}
 if (process.env.MINECRAFT_PORT) {
-    settings.port = process.env.MINECRAFT_PORT;
+    settings.port = Number(process.env.MINECRAFT_PORT);
 }
 if (process.env.MINDSERVER_PORT) {
     settings.mindserver_port = process.env.MINDSERVER_PORT;
@@ -71,7 +74,7 @@ if (process.env.SETTINGS_JSON) {
 }
 
 
-Mindcraft.init(false, settings.mindserver_port, settings.auto_open_ui);
+Mindcraft.init(true, settings.mindserver_port, settings.auto_open_ui);
 
 for (let profile of settings.profiles) {
     const profile_json = JSON.parse(readFileSync(profile, 'utf8'));
