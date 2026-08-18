@@ -1,21 +1,39 @@
 services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama-data:/root/.ollama
+    command: >-
+      sh -c "ollama serve &
+      until ollama list >/dev/null 2>&1; do sleep 2; done;
+      ollama pull sweaterdog/andy-4:micro-q8_0;
+      ollama pull embeddinggemma;
+      wait"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
   mindcraft:
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+    depends_on:
+      - ollama
     environment:
-      # Coolify injects these values. Do not commit API keys.
       MINECRAFT_HOST: ${MINECRAFT_HOST:?Set MINECRAFT_HOST in Coolify}
       MINECRAFT_PORT: ${MINECRAFT_PORT:-55916}
       MINDSERVER_PORT: 8080
-      PROFILES: '["./andy.json"]'
+      PROFILES: '["./profiles/andy-4.json"]'
       SETTINGS_JSON: '{"auto_open_ui":false,"render_bot_view":false}'
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
-      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      OLLAMA_URL: http://ollama:11434
     ports:
       - "8080"
-      - "3000-3003"
+
+volumes:
+  ollama-data:
