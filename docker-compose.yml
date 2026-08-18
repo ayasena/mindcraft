@@ -2,14 +2,21 @@ services:
   ollama:
     image: ollama/ollama:latest
     restart: unless-stopped
-    volumes:
-      - ollama-data:/root/.ollama
+    entrypoint: ["/bin/sh", "-c"]
     command: >-
-      sh -c "ollama serve &
+      "ollama serve &
       until ollama list >/dev/null 2>&1; do sleep 2; done;
       ollama pull sweaterdog/andy-4:micro-q8_0;
       ollama pull embeddinggemma;
       wait"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
     deploy:
       resources:
         reservations:
@@ -24,7 +31,10 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
-      - ollama
+      ollama:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       MINECRAFT_HOST: ${MINECRAFT_HOST:?Set MINECRAFT_HOST in Coolify}
       MINECRAFT_PORT: ${MINECRAFT_PORT:-55916}
