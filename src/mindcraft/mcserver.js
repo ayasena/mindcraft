@@ -147,8 +147,18 @@ export async function getServer(host, port, version) {
         throw new Error(`MC server was found ${serverString}, but version is unsupported. Supported versions are: ${mc.supportedVersions.join(", ")}.`);
     else if (version !== "auto" && server.version !== version)
         throw new Error(`MC server was found ${serverString}, but version is incorrect. Expected ${version}, but found ${server.version}. Check the server version in settings.js.`);
-    else
+    else {
+        // Mineflayer/minecraft-data may support a release family (for example
+        // 26.1) while the server reports a patch release (for example 26.1.2).
+        const supportedVersion = mc.supportedVersions.find(v =>
+            server.version === v || (server.version.startsWith(v) && server.version.charAt(v.length) === '.')
+        );
+        if (supportedVersion && supportedVersion !== server.version) {
+            console.log(`Using supported Minecraft version ${supportedVersion} for server ${server.version}.`);
+            server.version = supportedVersion;
+        }
         console.log(`MC server found. ${serverString}`);
+    }
 
     return server;
 }
