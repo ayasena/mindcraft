@@ -6,7 +6,7 @@ services:
     command: >-
       "ollama serve &
       until ollama list >/dev/null 2>&1; do sleep 2; done;
-      ollama pull sweaterdog/andy-4:latest;
+      ollama pull sweaterdog/andy-4:q2_k;
       ollama pull embeddinggemma;
       wait"
     volumes:
